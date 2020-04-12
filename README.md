@@ -8,48 +8,44 @@
 
 - [x] set the remote machine and develop on local IDE
 
-- [x] solve the saving image/video problem and get familiar with the developing style 
+- [x] solve image saving problem and get familiar with the development tools
 
   - [x] fix current plot function & save
-  - [ ] save video
-  - [ ] use tensorboard
-
+  - [x] view server images
 
 -------
 
 **PPO**
 
 - **save image/video** to files
-
-- solve issues when running `CartPole-v1 `
-
+  - [ ] generate & save video
+  - [ ] use tensorboard for monitoring loss
 - design API & **wrap command-line** package (run on Linux server)
 
-  - build PPO interface
-  - reformat modify interface file
-
+  - [x] build PPO interface
+  - [ ] add expert until functions
+    - [x] sample trajectories
+    - [ ] ⋯
 - **plots**(tensorboard) & save: 
-
-- - reward 
+  - reward 
   - entropy 
   - policy loss
   - value loss
-
+- solve issues when running `CartPole-v1 `
+  - change "success rate"
+  - reward never goes up
 - test: run on cartpole, debug, reformate code, etc.
+
+<u>***&rArr; [aim, by Sunday]***</u>
 
 - add code to run on **continuous envs**
 
-- - understand how to modify algorithms
-
+  - understand how to modify algorithms
   - search on distribution class (e.g. categorical, gaussian, …)
-
   - design the api to share
-
   - implement
-
   - try on new envs:
-
-  - - 2d walker
+    - 2d walker
     - humanoid
 
 - code reformat/debug
@@ -64,15 +60,14 @@
 
 - **Implement GAIL** on simple Gym environments
 
-- - ensure Gym environment(2d-Walker / cartpole / humanoid) can work and test on saving image/video
-
+  - ensure Gym environment(2d-Walker / cartpole / humanoid) can work and test on saving image/video
   - build trajectory storage/sample classes
 
   - build Generator & Discriminator classes
 
   - define training loop
 
-  - - controlling logic (sampling, updating networks)
+    - controlling logic (sampling, updating networks)
     - compute parameters needed
     - compute loss function and update
     - check the training loop & make up utils functions needed
@@ -83,18 +78,17 @@
 
 - Run on **more environments**
 
-- - test on both discrete and continuous envs: 2d-Walker / cart-pole(humanoid)
+  - test on both discrete and continuous envs: 2d-Walker / cart-pole(humanoid)
   - modify code
 
 - **Run Experiment & Plot**
 
-- - read paper again and design the experiments(plots)
-
+  - read paper again and design the experiments(plots)
   - check the parameters and modify codes
 
   - run 2 critical experiment:
 
-  - - discrete: cartpole, Acrobot, **Mountain Car**
+    - discrete: cartpole, Acrobot, **Mountain Car**
     - continuous: HalfCheetah, Hopper, Walker, Ant, **Humanoid**
 
   - save plot
@@ -128,7 +122,7 @@
   * PyCharm: File &rarr; Settings(ctl + alt + s) &rarr; Project:[your proj name] &rarr; Project Interpreter &rarr; "settings icon" &rarr; Add... &rarr; SSH Interpreter
   * Linux server: `conda [your project env]` `which python`
 
-**Other way of viewing server files**
+**Other ways of viewing server files**
 
 * use `http.server` service
   * in server folder: `python -m http.server`
@@ -155,7 +149,8 @@
 * add more APIs (for ppo-expert in GAIL)
   * render trajectories & save
 * find training issue: `CartPole-v1` reward does not go up:
-  * <img src="./demo_trianing_res(2020-04-12_01:03:46).png" style="zoom: 67%;" />
+  * <img src="./demo_trianing_res(2020-04-12_01:03:46).png
+  * " style="zoom: 67%;" />
 
 `[near future plans]`
 
