@@ -1,14 +1,26 @@
 ## Implementation Plan
 
-**Working on GitHub**
+**Working on GitHub + Linux Server**
 
-- [ ] set a repo and organize folders/files
+- [x] set a repo and organize folders/files
 
-- [ ] post the timeline on GitHub
+- [x] post the timeline on GitHub
 
-- [ ] set the remote env and develop on local PyCharm
+- [x] set the remote env and develop on local PyCharm
+
+  * failed to mount server folder on windows &rarr; using git to sync files
+  * git failed to sync between different file systems &rarr; using PyCharm SFTP to sync code
 
 - [ ] solve the saving image/video problem and get familiar with the developing style 
+
+  - [ ] fix current plot function (learn seaborn)
+    * `seanborn`, `matplotlib`
+    * multi y-axis, merge legends, modify plot attributes 
+  - [x] write saving util functions (issue)
+    * cannot save using remote interpreter
+    * success saved when running on server 
+  - [ ] save video
+  - [ ] use tensorboard
 
   <u>***&rArr; [by Friday]***</u>
 
@@ -18,7 +30,12 @@
 
 - **save image/video** to files
 
+- solve issues when running `CartPole-v1 `
+
 - design API & **wrap command-line** package (run on Linux server)
+
+  - build PPO interface
+  - reformat modify interface file
 
 - **plots**(tensorboard) & save: 
 
