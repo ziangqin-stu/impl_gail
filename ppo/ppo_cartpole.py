@@ -21,7 +21,7 @@ from utils import ParamDict
 
 from IPython import display
 from IPython.display import clear_output
-import time
+import time, copy
 
 # % matplotlib
 # inline
@@ -105,6 +105,35 @@ class PPO():
         log_prob = dist.log_prob(action.squeeze(-1)).view(-1, 1)  # ???
         entropy = dist.entropy().view(-1, 1)
         return log_prob, entropy
+
+    def sample_policy_rollout(self, rollout_number=100):
+        print('Sampling Rollouts... ({} rollouts)'.format(rollout_number))
+        env = copy.deepcopy(self.env)
+        rollouts = self.RolloutStorage(self.params.rollout_size, self.obs_size)
+
+        done = False
+        prev_obs = env.reset()
+        prev_obs = torch.tensor(prev_obs, dtype=torch.float32)
+
+        for j in range(rollout_number):
+            for step in range(self.rollouts.rollout_size):
+                if done:
+                    # reset Environment
+                    obs = env.reset()
+                    obs = torch.tensor(obs, dtype=torch.float32)
+                else:
+                    obs = prev_obs
+                act, log_prob = self.act(obs)
+                obs, reward, done, info = env.step(act.item())
+                rollouts.insert(step, torch.tensor(done, dtype=torch.float32), \
+                                act, log_prob, torch.tensor(reward, dtype=torch.float32), prev_obs[0])
+                prev_obs = torch.tensor(obs, dtype=torch.float32)
+            rollouts.reset()
+            if j % self.params.plotting_iters == 0 and j != 0:
+                print('    sampled {} rollouts.'.format(j))
+
+        print('Finished Sampling Rollouts!)'.format(rollout_number))
+        return rollouts
 
     def log_policy_rollout(self, policy, env_name, pytorch_policy=False):
         env = Monitor(gym.make(env_name), './video', force=True)
@@ -329,7 +358,7 @@ class PPO():
 #     policy_params=policy_params,
 #     rollout_size=2050,  # number of collected rollout steps per policy update
 #     num_updates=6,  # number of training policy iterations
-#     discount=0.99,  # discount factor
+#     discount=0.99,  # discount factor3
 #     plotting_iters=2,  # interval for logging graphs and policy rollouts
 #     env_name='CartPole-v1',  # we are using a tiny environment here for testing
 # )

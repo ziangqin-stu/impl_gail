@@ -8,7 +8,7 @@ import utils
 from utils import ParamDict
 from utils import demo_train
 
-import time, os
+import time, os, pickle
 
 
 
@@ -41,6 +41,7 @@ parser.add_argument('--show_plot', help='plot the learning curve if true', type=
 parser.add_argument('--save_plot', help='save the learning curve in ./save/img if true', type=bool, required=False)
 parser.add_argument('--plot_path', help='learning curve save path string, linux style', type=str, required=False)
 parser.add_argument('--plot_name', help='learning curve image name', type=str, required=False)
+parser.add_argument('--rollout_number', help='rollouts sampling number', type=int, required=False)
     # parser.add_argument('', help='', type=, required=)
 # parse commandline arguments
 args = parser.parse_args()
@@ -57,7 +58,7 @@ critic_coef = 0.5 if args.critic_coef is None else args.critic_coef
 rollout_size = 2050 if args.rollout_size is None else args.rollout_size
 num_updates = 3 if args.num_updates is None else args.num_updates
 discount = 0.99 if args.discount is None else args.discount
-plotting_iters = 2 if args.plotting_iters is None else args.plotting_iters
+plotting_iters = 10 if args.plotting_iters is None else args.plotting_iters
 n_seeds = 3 if args.n_seeds is None else args.n_seeds
 parameters = None
 #                        <----  Result Saving Parameters  ---->
@@ -66,30 +67,43 @@ save_plot = True if args.save_plot is None else args.save_plot
 plot_path = os.path.join('.', 'save', 'img') if args.plot_path is None else args.plot_path
 plot_name = 'training_res' + time.strftime("[%Y-%m-%d_%H:%M:%S]", time.localtime()) \
     if args.plot_name is None else args.plot_name
+rollout_number = 100 if args.rollout_number is None else args.rollout_number
 
 
 
 # Task Distribute
 # test ppo_cartpole
+policy_params = ParamDict(
+    hidden_dim=hidden_dim,
+    learning_rate=learning_rate,
+    batch_size=batch_size,
+    policy_epochs=policy_epochs,
+    entropy_coef=entropy_coef,
+    critic_coef=critic_coef
+)
+params = ParamDict(
+    policy_params=policy_params,
+    rollout_size=rollout_size,
+    num_updates=num_updates,
+    discount=discount,
+    plotting_iters=plotting_iters,
+    env_name=env_name,
+)
 if args.job_name == 'test':
-    policy_params = ParamDict(
-        hidden_dim=hidden_dim,
-        learning_rate=learning_rate,
-        batch_size=batch_size,
-        policy_epochs=policy_epochs,
-        entropy_coef=entropy_coef,
-        critic_coef=critic_coef
-    )
-    params = ParamDict(
-        policy_params=policy_params,
-        rollout_size=rollout_size,
-        num_updates=num_updates,
-        discount=discount,
-        plotting_iters=plotting_iters,
-        env_name=env_name,
-    )
     test_ppo = ppo_cartpole.PPO(params)
     demo_train(test_ppo, n_seeds=n_seeds)
+elif args.job_name == 'sample':
+    ppo = ppo_cartpole.PPO(params)
+    rollouts = ppo.sample_policy_rollout(rollout_number=rollout_number)
+    print("rollouts: {}".format(rollouts))
+    # save trajectory
+    print("Saving trajectories...")
+    file_name = os.path.join('.', 'save', 'expert',
+                             'trajs'+time.strftime("[%Y-%m-%d_%H:%M:%S]", time.localtime())+'.pickle')
+    file = open(file_name, 'wb')
+    pickle.dump(rollouts, file)
+    file.close()
+    print("Saved {} rollouts to {}!".format(rollout_number, file_name))
 else:
     print("JOBError: can not recognize this job_name: {}".format(job_name))
 

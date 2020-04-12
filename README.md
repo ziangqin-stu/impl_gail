@@ -6,23 +6,14 @@
 
 - [x] post the timeline on GitHub
 
-- [x] set the remote env and develop on local PyCharm
+- [x] set the remote machine and develop on local IDE
 
-  * failed to mount server folder on windows &rarr; using git to sync files
-  * git failed to sync between different file systems &rarr; using PyCharm SFTP to sync code
+- [x] solve the saving image/video problem and get familiar with the developing style 
 
-- [ ] solve the saving image/video problem and get familiar with the developing style 
-
-  - [ ] fix current plot function (learn seaborn)
-    * `seanborn`, `matplotlib`
-    * multi y-axis, merge legends, modify plot attributes 
-  - [x] write saving util functions (issue)
-    * cannot save using remote interpreter
-    * success saved when running on server 
+  - [x] fix current plot function & save
   - [ ] save video
   - [ ] use tensorboard
 
-  <u>***&rArr; [by Friday]***</u>
 
 -------
 
@@ -109,3 +100,75 @@
   - save plot
 
   - (optional) run in jupyter and archive
+
+
+
+## How to Use
+
+**Install**
+
+* ⋯
+* `conda activate gail`
+
+**Use PPO interface**
+
+* `cd ppo`
+* `python ppo.py --job_name test --num_updates [# training epoch] --plot_name [your training curv name]`
+
+
+
+## Tech Log
+
+**PyCharm**
+
+* build ssh connection with remote server
+* use SFTP for file sync
+  * PyCharm: Tools &rarr; Deployment &rarr; Configuration
+* Use remote interpreter
+  * PyCharm: File &rarr; Settings(ctl + alt + s) &rarr; Project:[your proj name] &rarr; Project Interpreter &rarr; "settings icon" &rarr; Add... &rarr; SSH Interpreter
+  * Linux server: `conda [your project env]` `which python`
+
+**Other way of viewing server files**
+
+* use `http.server` service
+  * in server folder: `python -m http.server`
+  * in windows terminal: `ssh -N -L localhost:8000:localhost:8000 ziang@lim001.usc.edu`
+  * open `http://127.0.0.1:8000/` in local browser
+
+
+
+## Dev Log
+
+`[4.10]`
+
+* make impl plan
+* start new repo
+* connect server
+* fix `FlatObsWrapperCartPole` fit `CartPole-v1` env
+* stuck on image can not save issue
+
+`[4.11]`
+
+* learn `matplotlib` & `seaborn`, rewrite `def plot_grid_std_learning_curves` function to fit `CartPole-v1` env
+* use PyCharm SFTP to replace Git for file sync
+* wrapped a PPO interface for future use
+* add more APIs (for ppo-expert in GAIL)
+  * render trajectories & save
+* find training issue: `CartPole-v1` reward does not go up:
+  * <img src="./demo_trianing_res(2020-04-12_01:03:46).png" style="zoom: 67%;" />
+
+`[near future plans]`
+
+* **finish designing API & build wrapping version**
+* **plot**
+  * modify/add plot functions
+  * plot different losses
+  * save video
+  * use tensorboard
+* fix/reformat code
+  * fix current issue of reward never goes up
+  * modify code to fit continuous environments
+  * use GPU
+* **fit continuous envs**
+* start a code base
+* ⋯
