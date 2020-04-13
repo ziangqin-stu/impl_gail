@@ -135,15 +135,14 @@
 
 `[4.10]`
 
-* make impl plan
-* start new repo
-* connect server
+* make impl plan & start new repo
+* fix issue when code remotely
 * fix `FlatObsWrapperCartPole` fit `CartPole-v1` env
 * stuck on image can not save issue
 
 `[4.11]`
 
-* learn `matplotlib` & `seaborn`, rewrite `def plot_grid_std_learning_curves` function to fit `CartPole-v1` env
+* try use `matplotlib` & `seaborn`, rewrite `def plot_grid_std_learning_curves` function to fit `CartPole-v1` environment (flaws existing)
 * use PyCharm SFTP to replace Git for file sync
 * wrapped a PPO interface for future use
 * add more APIs (for ppo-expert in GAIL)
@@ -151,6 +150,22 @@
 * find training issue: `CartPole-v1` reward does not go up:
   * <img src="./demo_trianing_res(2020-04-12_01:03:46).png
   * " style="zoom: 67%;" />
+
+`[4.12]`
+
+* modified code to quick solve bugs when running in `CartPole-v1`
+  * update success rate w.r.t. `env._max_episode_steps`
+  * modify plot function
+    * still failed to merge legend
+* save video
+  * failed, cannot even run `env.render(mode='rgb_array')`, fake monitor required
+    * reffs: [[run .render() over a server](https://stackoverflow.com/questions/40195740/how-to-run-openai-gym-render-over-a-server)] [[use fake screen to get videos](https://github.com/openai/gym/issues/35)]
+* use tensorboard 
+  * learn how to use: [[tutorial(video)](https://www.youtube.com/watch?v=pSexXMdruFM)] [[tutorial(bllog)](https://deeplizard.com/learn/video/pSexXMdruFM)] (waste some time on stupid bugs here)
+    * server: `tensorboard --logdir=runs`
+    * local: `ssh -N -L localhost:6006:localhost:6006 ziang@lim001.usc.edu`
+  * ~~modify current code to show losses~~
+* ~~try solving the not learning problem~~
 
 `[near future plans]`
 

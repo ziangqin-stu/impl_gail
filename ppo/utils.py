@@ -67,7 +67,7 @@ def plot_grid_std_learning_curves(d, num_it):
     plt.show()
 
 
-def plot_std_learning_curves(rewards, success_rates, num_it, no_show=False, save=True, plot_name=None):
+def plot_std_learning_curves(rewards, success_rates, num_it, no_show=False, save_plot=True, plot_name=None):
     print('Plotting...')
     # data prepare
     r, sr = np.asarray(rewards), np.asarray(success_rates)
@@ -87,9 +87,14 @@ def plot_std_learning_curves(rewards, success_rates, num_it, no_show=False, save
     ln2 = sns.lineplot(x="variable", y="value", data=df2, label='success rate',
                        color='orange', legend=False)
     ax2.set_ylabel('success rate', color=color2)
-
-    # modify legend & axis tcket color
-    if save:
+    # merge legend
+    # plt.legend()
+    # change tick color
+    ax2.spines['left'].set_color(color1)
+    ax2.spines['right'].set_color(color2)
+    plt.tight_layout()
+    # save & show
+    if save_plot:
         print("Saving training curve...")
         plot_name = plot_name if plot_name is not None else time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
         plt.savefig(os.path.join('.', 'save', 'img', plot_name + '.png'))
@@ -98,10 +103,10 @@ def plot_std_learning_curves(rewards, success_rates, num_it, no_show=False, save
         plt.show()
 
 
-def plot_learning_curve(rewards, success_rate, num_it, plot_std=False, plot_name=None):
+def plot_learning_curve(rewards, success_rate, num_it, plot_std=False, plot_name=None, save_plot=True):
     if plot_std:
         # plots shaded regions if list of reward timeseries is given
-        plot_std_learning_curves(rewards, success_rate, num_it, plot_name=plot_name)
+        plot_std_learning_curves(rewards, success_rate, num_it, plot_name=plot_name, save_plot=save_plot)
     else:
         plt.plot(rewards, label='reward/eps')
         if success_rate:
@@ -117,7 +122,7 @@ def plot_learning_curve(rewards, success_rate, num_it, plot_std=False, plot_name
 
 
 def demo_train(ppo, n_seeds=3,
-               plot_name='demo_trianing_res'+time.strftime("[%Y-%m-%d_%H:%M:%S]", time.localtime())):
+               plot_name='demo_trianing_res'+time.strftime("[%Y-%m-%d_%H:%M:%S]", time.localtime()), save_plot=True):
     # trian PPO policy
     rewards, success_rates = [], []
     for i in range(n_seeds):
@@ -127,7 +132,7 @@ def demo_train(ppo, n_seeds=3,
         success_rates.append(sr)
     print('All training runs completed!')
     # plot training curv
-    plot_learning_curve(rewards, success_rates, ppo.params.num_updates, plot_std=True, plot_name=plot_name)
+    plot_learning_curve(rewards, success_rates, ppo.params.num_updates, plot_std=True, plot_name=plot_name, save_plot=save_plot)
     print("Average Reward: {}".format(np.mean(rewards, axis=0)[-1]))
     print("Average Success Rates: {}".format(np.mean(success_rates, axis=0)[-1]))
 

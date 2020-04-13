@@ -8,7 +8,7 @@ import utils
 from utils import ParamDict
 from utils import demo_train
 
-import time, os, pickle
+import time, os, pickle, ast
 
 
 
@@ -37,8 +37,8 @@ parser.add_argument('--n_seeds', help='number of training with different random 
 parser.add_argument('--parameters', help='path-filename of the file that stores initializing algorithm parameters',
                     type=int, required=False)
 #                        <----  Result Saving Parameters  ---->
-parser.add_argument('--show_plot', help='plot the learning curve if true', type=bool, required=False)
-parser.add_argument('--save_plot', help='save the learning curve in ./save/img if true', type=bool, required=False)
+parser.add_argument('--show_plot', help='plot the learning curve if true', type=ast.literal_eval, required=False)
+parser.add_argument('--save_plot', help='save the learning curve in ./save/img if true', type=ast.literal_eval, required=False)
 parser.add_argument('--plot_path', help='learning curve save path string, linux style', type=str, required=False)
 parser.add_argument('--plot_name', help='learning curve image name', type=str, required=False)
 parser.add_argument('--rollout_number', help='rollouts sampling number', type=int, required=False)
@@ -90,8 +90,9 @@ params = ParamDict(
     env_name=env_name,
 )
 if args.job_name == 'test':
+    print('>>>>>>>> save_plot={}'.format(save_plot))
     test_ppo = ppo_cartpole.PPO(params)
-    demo_train(test_ppo, n_seeds=n_seeds)
+    demo_train(test_ppo, n_seeds=n_seeds, save_plot=save_plot)
 elif args.job_name == 'sample':
     ppo = ppo_cartpole.PPO(params)
     rollouts = ppo.sample_policy_rollout(rollout_number=rollout_number)

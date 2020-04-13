@@ -55,8 +55,6 @@ class PPO():
         self.clip_param = clip_param
 
     def gen_env(self):
-        # env = Monitor(gym.make(self.params.env_name), './video', force=True)
-        # env = self.FlatObsWrapperCartPole(gym.make(self.params.env_name))
         env = gym.make(self.params.env_name)
         return env
 
@@ -185,17 +183,26 @@ class PPO():
             start_time = time.time()
 
             ## collect rollouts
+            t = 1
             for step in range(self.rollouts.rollout_size):
+                t += 1
                 if done:
                     # store episode statistics
                     avg_eps_reward.update(eps_reward)
-                    if 'success' in info:
-                        avg_success_rate.update(int(info['success']))
-
+                    if 'success' in info or t >= self.env._max_episode_steps:
+                        # print(">>>>>>>>>>>>>>>>>>>>>>> Success! max_episode: {}, t: {}".format(self.env._max_episode_steps, t))
+                        try: avg_success_rate.update(int(info['success']))
+                        except:
+                            try: avg_success_rate.update(1)
+                            except: pass
+                    else:
+                        # print(">>>>>>>>>>>>>>>>>>>>>>> Fail! t: {}".format(t))
+                        avg_success_rate.update(0)
                     # reset Environment
                     obs = self.env.reset()
                     obs = torch.tensor(obs, dtype=torch.float32)
                     eps_reward = 0.
+                    t = 1
                 else:
                     obs = prev_obs
 
@@ -341,38 +348,3 @@ class PPO():
                     yield self.actions[indices], self.returns[indices], self.obs[indices], self.log_probs[indices]
                 else:
                     yield self.actions[indices], self.returns[indices], self.obs[indices]
-
-
-# # Test Trian
-# # hyperparameters
-# policy_params = ParamDict(
-#     # policy_class = PPO,  # Policy class to use (replaced later)
-#     hidden_dim=32,  # dimension of the hidden state in actor network
-#     learning_rate=1e-3,  # learning rate of policy update
-#     batch_size=1024,  # batch size for policy update
-#     policy_epochs=4,  # number of epochs per policy update
-#     entropy_coef=0.001,  # hyperparameter to vary the contribution of entropy loss
-#     critic_coef=0.5  # Coefficient of critic loss when weighted against actor loss
-# )
-# params = ParamDict(
-#     policy_params=policy_params,
-#     rollout_size=2050,  # number of collected rollout steps per policy update
-#     num_updates=6,  # number of training policy iterations
-#     discount=0.99,  # discount factor3
-#     plotting_iters=2,  # interval for logging graphs and policy rollouts
-#     env_name='CartPole-v1',  # we are using a tiny environment here for testing
-# )
-#
-# n_seeds = 3
-# rewards, success_rates = [], []
-# for i in range(n_seeds):
-#     ppo = PPO(params)
-#     print("Start training run {}!".format(i))
-#     r, sr = ppo.train(i)
-#     rewards.append(r);
-#     success_rates.append(sr)
-# print('All training runs completed!')
-#
-# plot_learning_curve(rewards, success_rates, params.num_updates, plot_std=True, plot_name='trianing_res')
-# print("Average Reward: {}".format(np.mean(rewards, axis=0)[-1]))
-# print("Average Success Rates: {}".format(np.mean(success_rates, axis=0)[-1]))

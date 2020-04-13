@@ -106,7 +106,7 @@ t = np.linspace(-np.pi, np.pi, 201)
 sin = [np.sin(t).tolist(), [y + 0.5 for y in np.sin(t)], [y - 0.5 for y in np.sin(t)]]
 exp = [np.exp(t).tolist(), [y + 0.5 for y in np.exp(t)], [y - 0.5 for y in np.exp(t)]]
 
-def plot_std_learning_curves_debug(rewards, success_rates, num_it, no_show=False, save=True, plot_name=None):
+def plot_std_learning_curves_debug(rewards, success_rates, num_it, no_show=False, plot_save=True, plot_name=None):
     # data prepare
     r, sr = np.asarray(rewards), np.asarray(success_rates)
     df1 = pd.DataFrame(r).melt()
@@ -119,18 +119,21 @@ def plot_std_learning_curves_debug(rewards, success_rates, num_it, no_show=False
                  color=color1,legend=False)
     ax1.set_ylabel('reward/eps', color=color1)
     ax1.set_xlabel('Training iterations')
-
+    # second subplot
     ax2 = ax1.twinx()
     color2 = 'orange'
-    ax2.set_ylabel('success rate', color=color2)
     ln2 = sns.lineplot(x="variable", y="value", data=df2, label='success rate',
                  color='orange', legend=False)
-
-    # modify legend & axis tcket color
-    if save:
+    ax2.set_ylabel('success rate', color=color2)
+    # merge legend
+    # plt.legend()
+    # change tick color
+    ax2.spines['left'].set_color(color1)
+    ax2.spines['right'].set_color(color2)
+    if plot_save:
         plot_name = plot_name if plot_name is not None else time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
         plt.savefig(os.path.join('.', 'save', 'img', plot_name + '.png'))
     if not no_show:
         plt.show()
 
-plot_std_learning_curves_debug(sin, exp, len(t))
+plot_std_learning_curves_debug(sin, exp, len(t), plot_save=False)
